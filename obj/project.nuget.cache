@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "E0yb3EIHZlQDPfjLTgW36v38nrblsUI3pxOEqTnV3LH0Y5+6LXUubOkrNHyQDzaz7YoQxVRyIv6TPC9OkJFTgQ==",
+  "success": true,
+  "projectFilePath": "/home/will/markovchainwithasunnydisposition/mcwasd.csproj",
+  "expectedPackageFiles": [
+    "/home/will/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.23/microsoft.aspnetcore.app.ref.8.0.23.nupkg.sha512"
+  ],
+  "logs": []
+}
