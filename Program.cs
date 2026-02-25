@@ -10,6 +10,7 @@ namespace MCWASD
         public static int coolerWordInc = 0;
         public static int temperature = 3; // chance of using second or third option
         public static char[] charSeparators = { ' ', '.', ',', ':', ';' };
+        public static bool isNpt = false;
         static void Main(string[] args)
         {
             try
@@ -21,7 +22,101 @@ namespace MCWASD
                 Console.WriteLine("Please supply an argument. Use --help for help.");
                 Environment.Exit(1);
             }
-            if (args[0] != "--help")
+            if (args[0] == "--help")
+            {
+                Console.WriteLine("markov chain with a sunny disposition");
+                Console.WriteLine("usage: mcwasd [file] [temperature value]");
+                Console.WriteLine("input files can be either txt files to train on startup or npt files for pretrained");
+                Console.WriteLine("temperature values can vary from 0 to 10, if none is specified 3 is used");
+                Console.WriteLine("");
+                Console.WriteLine("options:");
+                Console.WriteLine("--help    : this command");
+                Console.WriteLine("--pretrain: use it like \"mcwasd --pretrain [training data] [output file]\"");
+            }
+            else if (args[0] == "--pretrain")
+            {
+                try
+                {
+                    string argtest1 = args[1];
+                }
+                catch
+                {
+                    Console.WriteLine("Provide an input and output file. Use --help for assistance.");
+                    Environment.Exit(1);
+                }
+                try
+                {
+                    string argtest2 = args[2];
+                }
+                catch
+                {
+                    Console.WriteLine("Provide an output file. Use --help for assistance.");
+                    Environment.Exit(1);
+                }
+                try
+                {
+                    trainingFile = File.ReadAllLines(args[1]);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("File loading failed! See exception below:");
+                    if (ex.Message.Contains("Index was outside the bounds of the array"))
+                    {
+                        Console.WriteLine("No file specified.");
+                    }
+                    else
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                    Environment.Exit(1);
+                }
+                foreach (string line in trainingFile)
+                {
+                    string[] coolerSplitWords = line.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string word in coolerSplitWords)
+                    {
+                        coolerWordInc++;
+                    }
+                }
+                ngrams = new Ngram[coolerWordInc];
+                try
+                {
+                    Console.WriteLine("Training model, please wait...");
+                    Ngram.Train(trainingFile, ngrams);
+                    Console.WriteLine("Training succeeded! Saving to " + args[2]);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Training failed. Error: " + ex.Message);
+                    Environment.Exit(1);
+                }
+                Console.WriteLine("Calculating usage percentages...");
+                int asdf = 0;
+                foreach (Ngram n in ngrams)
+                {
+                    try
+                    {
+                        n.UsagePercent = (decimal)n.TimesUsed / (decimal)coolerWordInc;
+                        asdf++;
+                    }
+                    catch
+                    {
+                        break;
+                    }
+                }
+                Console.WriteLine("Calculation succeeded!");
+                string[] outputNPT = Pretrainer.ExportNPT(ngrams);
+                try
+                {
+                    File.WriteAllLines(args[2], outputNPT);
+                    Console.WriteLine("Successfully written NPT data to " + args[2] + "!");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Writing failed! Exception: " + ex);
+                }
+            }
+            else
             {
                 try
                 {
@@ -54,37 +149,46 @@ namespace MCWASD
                         }
                         Environment.Exit(1);
                     }
-                    foreach (string line in trainingFile)
+                    if (trainingFile[0] == "NPT2")
                     {
-                        string[] coolerSplitWords = line.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
-                        foreach (string word in coolerSplitWords)
+                        isNpt = true;
+                        Ngram[] importedNPT = Pretrainer.Pretrain(trainingFile);
+                        ngrams = importedNPT;
+                    }
+                    else
+                    {
+                        foreach (string line in trainingFile)
                         {
-                            coolerWordInc++;
+                            string[] coolerSplitWords = line.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
+                            foreach (string word in coolerSplitWords)
+                            {
+                                coolerWordInc++;
+                            }
                         }
-                    }
-                    ngrams = new Ngram[coolerWordInc];
-                    try
-                    {
-                        Console.WriteLine("Training model, please wait...");
-                        Ngram.Train(trainingFile, ngrams);
-                        Console.WriteLine("Training succeeded! Temperature is " + temperature.ToString());
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Training failed. Error: " + ex.Message);
-                        Environment.Exit(1);
-                    }
-                    int asdf = 0;
-                    foreach (Ngram n in ngrams)
-                    {
+                        ngrams = new Ngram[coolerWordInc];
                         try
                         {
-                            n.UsagePercent = (decimal)n.TimesUsed / (decimal)coolerWordInc;
-                            asdf++;
+                            Console.WriteLine("Training model, please wait...");
+                            Ngram.Train(trainingFile, ngrams);
+                            Console.WriteLine("Training succeeded! Temperature is " + temperature.ToString());
                         }
-                        catch
+                        catch (Exception ex)
                         {
-                            break;
+                            Console.WriteLine("Training failed. Error: " + ex.Message);
+                            Environment.Exit(1);
+                        }
+                        int asdf = 0;
+                        foreach (Ngram n in ngrams)
+                        {
+                            try
+                            {
+                                n.UsagePercent = (decimal)n.TimesUsed / (decimal)coolerWordInc;
+                                asdf++;
+                            }
+                            catch
+                            {
+                                break;
+                            }
                         }
                     }
                     Console.Write("Enter a word\n>");
@@ -92,7 +196,7 @@ namespace MCWASD
                     Console.Write("How many words should be generated?\n>");
                     int howMany = 10;
                     string nextOneIGuess = starter;
-                    string cool;
+                    string cool = "";
                     try
                     {
                         howMany = Int32.Parse(Console.ReadLine());
@@ -110,12 +214,6 @@ namespace MCWASD
                     }
                     Console.WriteLine();
                 } 
-            }
-            else
-            {
-                Console.WriteLine("markov chain with a sunny disposition");
-                Console.WriteLine("usage: mcwasd [file] [temperature value]");
-                Console.WriteLine("temperature values can vary from 0 to 10, if none is specified 3 is used");
             }
         }
     }
@@ -160,40 +258,6 @@ namespace MCWASD
             Array.Resize(ref ngramData, wordInc);
             string[] words1 = new string[Program.coolerWordInc];
             string[] words2 = new string[Program.coolerWordInc];
-            /*
-            int coolererWordInc = 0;
-            foreach (Ngram n in ngramData)
-            {
-                try
-                {
-                    words1[coolererWordInc] = n.Sequence1;
-                    Console.WriteLine("doing something in the coolerer loop :3");
-                    words2[coolererWordInc] = n.Sequence2;
-                }
-                catch
-                {
-                    break;
-                }
-                int coolerererWordInc = 0;
-                foreach (string s in words1)
-                {
-                    if (s == n.Sequence1 && coolerererWordInc != coolererWordInc)
-                    {
-                        int coolererererWordInc = 0;
-                        Console.WriteLine("doing something in the coolererer loop :3");
-                        foreach (string b in words2)
-                        {
-                            if (b == n.Sequence2 && coolererererWordInc != coolerererWordInc)
-                            {
-                                n.TimesUsed++;
-                            }
-                        }
-                    }
-                    coolerererWordInc++;
-                }
-                coolererWordInc++;
-            }
-            */
             int uniqueCount = 0;
 
             foreach (string line in trainingData)
@@ -274,7 +338,23 @@ namespace MCWASD
                 }
                 catch
                 {
-                    returnThisOne = Program.trainingFile[random.Next(0, Program.trainingFile.Length - 1)];
+                    // npt safe version because the npt unsafe version is funnier but breaks on npt
+                    if (Program.isNpt)
+                    {
+                        int integer = random.Next(0, Program.ngrams.Length - 1);
+                        if (Program.ngrams[integer] == null)
+                        {
+                            integer = random.Next(0, Program.ngrams.Length - 1);
+                        }
+                        else
+                        {
+                            returnThisOne = Program.ngrams[integer].Sequence2;
+                        }
+                    }
+                    else
+                    {
+                        returnThisOne = Program.trainingFile[random.Next(0, Program.trainingFile.Length - 1)];
+                    }
                 }
             }
             else
@@ -297,10 +377,65 @@ namespace MCWASD
                 }
                 catch
                 {
-                    returnThisOne = Program.trainingFile[random.Next(0, Program.trainingFile.Length - 1)];
+                    if (Program.isNpt)
+                    {
+                        int integer = random.Next(0, Program.ngrams.Length - 1);
+                        if (Program.ngrams[integer] == null)
+                        {
+                            integer = random.Next(0, Program.ngrams.Length - 1);
+                        }
+                        else
+                        {
+                            returnThisOne = Program.ngrams[integer].Sequence2;
+                        }
+                    }
+                    else
+                    {
+                        returnThisOne = Program.trainingFile[random.Next(0, Program.trainingFile.Length - 1)];
+                    }
                 }
             }
             return returnThisOne;
+        }
+    }
+    public class Pretrainer
+    {
+        public static string[] ExportNPT(Ngram[] ngramData)
+        {
+            string[] pretrainOutput = new string[ngramData.Length];
+            pretrainOutput[0] = "NPT2";
+            for (int g = 1; g < ngramData.Length; g++)
+            {
+                if (ngramData[g] == null)
+                {
+                    break;
+                }
+                pretrainOutput[g] = ngramData[g].Sequence1 + "," + ngramData[g].Sequence2 + "," + ngramData[g].UsagePercent.ToString();
+            }
+            return pretrainOutput;
+        }
+        public static Ngram[] Pretrain(string[] nptData)
+        {
+            Ngram[] ngramOutput = new Ngram[nptData.Length];
+            for (int g = 1; g < nptData.Length; g++)
+            {
+                if (nptData[g] == null || nptData[g] == "")
+                {
+                    break;
+                }
+                string[] splitNgram = nptData[g].Split(',');
+                Ngram ngramToExport = new Ngram(splitNgram[0], splitNgram[1]);
+                try
+                {
+                    ngramToExport.UsagePercent = Decimal.Parse(splitNgram[2]);
+                }
+                catch
+                {
+                    Console.WriteLine("Unable to parse decimal!");
+                }
+                ngramOutput[g] =  ngramToExport;
+            }
+            return ngramOutput;
         }
     }
 }

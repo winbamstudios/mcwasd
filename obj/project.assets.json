@@ -8,19 +8,19 @@
     "net8.0": []
   },
   "packageFolders": {
-    "/home/will/.nuget/packages/": {}
+    "/root/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/will/markovchainwithasunnydisposition/mcwasd.csproj",
+      "projectUniqueName": "/home/will/mcwasd/mcwasd.csproj",
       "projectName": "mcwasd",
-      "projectPath": "/home/will/markovchainwithasunnydisposition/mcwasd.csproj",
-      "packagesPath": "/home/will/.nuget/packages/",
-      "outputPath": "/home/will/markovchainwithasunnydisposition/obj/",
+      "projectPath": "/home/will/mcwasd/mcwasd.csproj",
+      "packagesPath": "/root/.nuget/packages/",
+      "outputPath": "/home/will/mcwasd/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/will/.nuget/NuGet/NuGet.Config"
+        "/root/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
