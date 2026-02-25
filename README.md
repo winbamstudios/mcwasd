@@ -12,12 +12,12 @@ options:
 --help: this command
 --pretrain: use it like "mcwasd --pretrain [training data] [output file] [amount of n grams]"
 ```
-<br>training data can be any plain text file. yes, anything. as long as your computer is decently fast the training shouldn't take long
+training data can be any plain text file. yes, anything. as long as your computer is decently fast the training shouldn't take long
 ### how to install on linux
 ```
 dotnet build
 sudo cp bin/Debug/net8.0 /bin
 ```
-<br>the net8.0 may vary based on version used for compilation
+the net8.0 may vary based on version used for compilation
 
 (yes, it's named after the line from the jamiep song, it's the thing that made me make this abomination)
