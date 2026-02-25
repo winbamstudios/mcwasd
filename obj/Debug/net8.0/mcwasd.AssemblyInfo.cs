@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("mcwasd")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+54937c803de46973564706443dd5c395c96b6ca2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+896f9be13c9d9792f7d7822b6daf52992f8b810c")]
 [assembly: System.Reflection.AssemblyProductAttribute("mcwasd")]
 [assembly: System.Reflection.AssemblyTitleAttribute("mcwasd")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
