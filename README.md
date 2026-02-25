@@ -17,6 +17,7 @@ options:
 ```
 dotnet build
 sudo cp bin/Debug/net8.0 /bin
-```<br>the net8.0 may vary based on version used for compilation
+```
+<br>the net8.0 may vary based on version used for compilation
 
 (yes, it's named after the line from the jamiep song, it's the thing that made me make this abomination)
